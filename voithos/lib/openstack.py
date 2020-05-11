@@ -47,6 +47,17 @@ def kolla_ansible_generate_certificates(release, passwords_path, globals_path):
     shell(cmd)
 
 
+def kolla_ansible_globals(release):
+    """ Genereate certificates directory """
+    cwd = os.getcwd()
+    cmd = (
+        f"docker run --rm -v {cwd}:/temp-dir "
+        f"breqwatr/kolla-ansible:{release} "
+        "cp /var/repos/kolla-ansible/etc/kolla/globals.yml temp-dir/"
+    )
+    shell(cmd)
+
+
 def kolla_ansible_get_admin_openrc(release, inventory_path, globals_path, passwords_path):
     """ Save the admin-openrc.sh file to current working directory """
     cwd = os.getcwd()
@@ -133,10 +144,16 @@ def kolla_ansible_exec(
         "DEBUG",
     ]
     if command not in valid_cmds:
-        error('ERROR: Invalid command "{command}" - Valid commands: {valid_cmds}', exit=True)
+        error(f'ERROR: Invalid command "{command}" - Valid commands: {valid_cmds}', exit=True)
     config_vol = " "
     if config_dir is not None:
         config_vol = volume_opt(config_dir, "/etc/kolla/config")
+    rm_arg = ''
+    inv_vol = volume_opt(inventory_path, "/etc/kolla/inventory")
+    globals_vol = volume_opt(globals_path, "/etc/kolla/globals.yml")
+    passwd_vol = volume_opt(passwords_path, "/etc/kolla/passwords.yml")
+    ssh_vol = volume_opt(ssh_key_path, "/root/.ssh/id_rsa")
+    cert_vol = volume_opt(certificates_dir, "/etc/kolla/certificates")
     if command == "DEBUG":
         name = f"kolla-ansible-{release}"
         rm_arg = f"-d --name {name}"
@@ -146,11 +163,6 @@ def kolla_ansible_exec(
     else:
         run_cmd = f"kolla-ansible {command} -i /etc/kolla/inventory"
         rm_arg = "--rm"
-        inv_vol = volume_opt(inventory_path, "/etc/kolla/inventory")
-        globals_vol = volume_opt(globals_path, "/etc/kolla/globals.yml")
-        passwd_vol = volume_opt(passwords_path, "/etc/kolla/passwords.yml")
-        ssh_vol = volume_opt(ssh_key_path, "/root/.ssh/id_rsa")
-        cert_vol = volume_opt(certificates_dir, "/etc/kolla/certificates")
     cmd = (
         f"docker run {rm_arg} --network host "
         f"{inv_vol} {globals_vol} {passwd_vol} {ssh_vol} {cert_vol} {config_vol}"

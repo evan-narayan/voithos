@@ -29,12 +29,12 @@ def start(
         "VERSION": release,
     }
     env_str = env_string(env_vars)
-    vol_str = ""
+    cert_vol_mounts = ""
     ports = f" -p 0.0.0.0:{http_port}:80 "
     if cert_path is not None and cert_key_path is not None:
         cert_mount = volume_opt(cert_path, "/etc/nginx/haproxy.crt")
         priv_key_mount = volume_opt(cert_key_path, "/etc/nginx/haproxy.key")
-        vol_str = f" {cert_mount} {priv_key_mount} "
+        cert_vol_mounts = f" {cert_mount} {priv_key_mount} "
         ports += f" -p 0.0.0.0:{https_port}:443 "
     daemon = "-d --restart=always"
     run = ""
@@ -42,6 +42,8 @@ def start(
     if DEV_MODE:
         if "ARCUS_CLIENT_DIR" not in os.environ:
             error("ERROR: must set $ARCUS_CLIENT_DIR when $VOITHOS_DEV==true", exit=True)
+        client_dir = os.environ["ARCUS_CLIENT_DIR"]
+        assert_path_exists(client_dir)
         run = (
             'bash -c "'
             "/env_config.py && "
@@ -51,13 +53,15 @@ def start(
             'grunt watch-changes"'
         )
         daemon = "-it --rm"
-        client_dir = os.environ["ARCUS_CLIENT_DIR"]
-        assert_path_exists(client_dir)
-        dev_mount = f"-v {client_dir}:/app"
+        dev_mount = volume_opt(client_dir, "/app")
+    name = "arcus_client"
+    shell(f"docker rm -f {name} || true")
+    log_mount = "-v /var/log/arcus-client:/var/log/nginx"
+    hosts_mount = "-v /etc/hosts:/etc/hosts"
     cmd = (
-        f"docker run --name arcus_client -v /var/log/arcus-client:/var/log/nginx "
+        f"docker run --name {name}"
         f"{daemon} {ports} {env_str} "
-        f"{vol_str} {dev_mount} -v /etc/hosts:/etc/hosts "
+        f"{cert_vol_mounts} {dev_mount} {log_mount} {hosts_mount}"
         f"{image} {run}"
     )
     shell(cmd)

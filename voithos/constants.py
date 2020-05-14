@@ -73,7 +73,7 @@ KOLLA_IMAGE_REPOS["stein"].extend(
 
 # TRAIN RELEASE
 KOLLA_IMAGE_REPOS["train"] = KOLLA_IMAGE_REPOS["stein"]
-# nova-consoleauth was deprecated a few releases ago, reemoved in train
+# nova-consoleauth was deprecated a few releases ago, removed in train
 KOLLA_IMAGE_REPOS["stein"].remove("ubuntu-source-nova-consoleauth")
 # Log and metric aggregation via prometheus and elasticsearch now supported
 KOLLA_IMAGE_REPOS["train"].extend(

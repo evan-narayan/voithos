@@ -183,6 +183,7 @@ def sync_local_registry(release, keep, registry):
     for repo in KOLLA_IMAGE_REPOS[release]:
         dh_image = f"breqwatr/{repo}:{release}"
         echo(f"Progress: {index}/{total_images} - Image: {dh_image}")
+        index += 1
         local_image = f"{registry}/{dh_image}"
         shell(f"docker pull {dh_image}")
         shell(f"docker tag {dh_image} {local_image}")

@@ -59,9 +59,9 @@ def start(
     log_mount = "-v /var/log/arcus-client:/var/log/nginx"
     hosts_mount = "-v /etc/hosts:/etc/hosts"
     cmd = (
-        f"docker run --name {name}"
+        f"docker run --name {name} "
         f"{daemon} {ports} {env_str} "
-        f"{cert_vol_mounts} {dev_mount} {log_mount} {hosts_mount}"
+        f"{cert_vol_mounts} {dev_mount} {log_mount} {hosts_mount} "
         f"{image} {run}"
     )
     shell(cmd)

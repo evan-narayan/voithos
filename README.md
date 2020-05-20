@@ -7,7 +7,7 @@ it in the spirit of sharing and collaboration.
 
 ## Installation
 
-Voithos is currently pre-release and only available on GitHub.
+Voithos is currently available on GitHub:
 
 ```bash
 # Create virtualenv

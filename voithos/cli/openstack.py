@@ -14,7 +14,7 @@ def get_passwords(release):
     """ Generate Kolla-Ansible's ./passwords.yml file """
     openstack.kolla_ansible_genpwd(release)
     click.echo("")
-    click.echo("Creatied password file: ./passwords.yml")
+    click.echo("Created password file: ./passwords.yml")
 
 
 @click.option("--release", "-r", help="OpenStack release name", required=True)

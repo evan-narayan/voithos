@@ -1,25 +1,22 @@
-[Index](/)
-\> Creating Kolla-Ansible's Inventory File
-
 # Creating Kolla-Ansible's Inventory File
 
 The inventory file defines which nodes will run what OpenStack roles.
 
-Generate a template of the file. Kolla-Ansible's git checkout contains sample
-inventory files. Voithos can automatically extract one of those sample files
-to the present working directory. The inventory files change from OpenStack
-release to OpenStack release, so be sure to use the correct `--release` option.
+Generate a template of the file. Kolla-Ansible's git checkout contains sample inventory files.
+Voithos can automatically extract one of those sample files to the present working directory.
+The inventory files change from OpenStack release to OpenStack release, so be sure to use the
+correct `--release` option.
 
 
 ```bash
 # creates ./inventory
+
 voithos openstack get-inventory-template --release stein
 ```
 
 This is a standard [INI-format](https://en.wikipedia.org/wiki/INI_file) Ansible
 [inventory file](https://docs.ansible.com/ansible/2.3/intro_inventory.html).
-While helpful, it isn't necessary to be familiar with Ansible to edit the
- inventory file.
+While helpful, it isn't necessary to be familiar with Ansible to edit the inventory file.
 
 OpenStack roles are represented as follows:
 
@@ -72,9 +69,9 @@ controlNode2
 controlNode3
 ```
 
-In the deployment server, now's a good time to double-check that you can
-ping each of those hostnames. The deployment will fail if your DNS or
-`/etc/hosts` file aren't set up correctly.
+Now's a good time to double-check that you can ping each of those hostnames from the server
+which will run Kolla-Ansible. The deployment will fail if your DNS or `/etc/hosts` file aren't set
+up correctly. If needed, you can use IP addresses in the inventory instead.
 
 Similarly, SSH to each server using your designated SSH key as root to
 confirm that the `authorized_keys` files are deployed correctly.

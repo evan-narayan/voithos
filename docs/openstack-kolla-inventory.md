@@ -11,7 +11,7 @@ correct `--release` option.
 ```bash
 # creates ./inventory
 
-voithos openstack get-inventory-template --release stein
+voithos openstack get-inventory-template --release train
 ```
 
 This is a standard [INI-format](https://en.wikipedia.org/wiki/INI_file) Ansible

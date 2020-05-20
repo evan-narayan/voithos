@@ -17,8 +17,8 @@ Ceph already be installed. If you haven't installed Ceph yet, follow the
    - [**Launch a local Docker registry**](/registry.html) and
    - [**Sync Kolla images to it**](/openstack-registry-mirror.html)
 1. [**Prepare the metal cloud servers**](/openstack-server-setup.html)
-1. [**Generate unique passwords for OpenStack service**](/openstack-kolla-passwords.html)
-   - `passwords.yml`
+1. [**Generate unique passwords for OpenStack service**](/openstack-kolla-passwords.html) -
+   `passwords.yml`
 1. [**Create globals.yml for Kolla-Ansible**](/openstack-kolla-globals.html) - `globals.yml`
 1. [**Write the inventory file for Kolla-Ansible**](/openstack-kolla-inventory.html) - `inventory`
 1. [**Collect or generate HTTPS certificates**](/openstack-kolla-certificates.md) - `certificates/`
@@ -26,3 +26,5 @@ Ceph already be installed. If you haven't installed Ceph yet, follow the
 1. [**Bootstrap the OpenStack servers**](/openstack-kolla-bootstrap.html)
 1. [**Pull Docker images to each node**](/openstack-kolla-pull.html)
 1. [**Initialize OpenStack's service containers**](/openstack-kolla-deploy.html)
+1. [** Generate the admin OpenRC file**](/openstack-kolla-admin-openrc.html) - `admin-openrc.sh`
+1. [**Run the smoke-tests**](/openstack-smoke-tests.html)

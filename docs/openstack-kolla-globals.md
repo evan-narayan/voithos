@@ -41,14 +41,14 @@ neutron_external_interface: eno2
 You’ll usually just configure one interface (a bond) for everything “undercloud” as follows:
 
 ```yaml
-#network_interface: "eth0"
+network_interface: eno1
 ```
 
 For more fine-grained control, look into these  options. They’re explained well
 [here](https://github.com/openstack/kolla-ansible/blob/cd3c51197e04d9df5077dcb92e8521efca5e5075/doc/source/admin/production-architecture-guide.rst).
 
 ```yaml
-lla_external_vip_interface: "{{ network_interface }}"
+#kolla_external_vip_interface: "{{ network_interface }}"
 #api_interface: "{{ network_interface }}"
 #storage_interface: "{{ network_interface }}"
 #cluster_interface: "{{ network_interface }}"
@@ -64,19 +64,18 @@ lla_external_vip_interface: "{{ network_interface }}"
 ```yaml
 enable_haproxy: yes
 
-kolla_same_external_internal_vip: <yes or no, does internal match external>
+# Matching internal VIP and external VIP don't work correctly with HTTPS enabled
+kolla_same_external_internal_vip: no
 kolla_internal_vip_address: <internal vip>
 kolla_external_vip_address: <external vip>
 
-#kolla_enable_tls_internal: "no"
-#kolla_enable_tls_external: "{{ kolla_enable_tls_internal if kolla_same_external_internal_vip | bool else 'no' }}"
-#kolla_external_fqdn_cert: "{{ node_config }}/certificates/haproxy.pem"
-#kolla_internal_fqdn_cert: "{{ node_config }}/certificates/haproxy-internal.pem"
-#kolla_external_fqdn_cacert: "{{ node_config }}/certificates/haproxy-ca.crt"
-#kolla_internal_fqdn_cacert: "{{ node_config }}/certificates/haproxy-ca-internal.crt"
+kolla_external_fqdn: < external VIP or fqdn>
+
+kolla_enable_tls_internal: no
+kolla_enable_tls_external: yes
 ```
 
-##KeppAlived
+## KeepAlived
 
 It's important to choose a unique VRID on your subnet.
 
@@ -133,7 +132,7 @@ enable_ceph: no
 enable_keystone: yes
 
 keystone_admin_user: admin
-keystone_admin_project: "admin"
+keystone_admin_project: admin
 ```
 
 ## Nova
@@ -170,12 +169,12 @@ neutron_extension_drivers:
 ```yaml
 enable_glance: yes
 
-#glance_backend_ceph: "no"
-#glance_backend_file: "yes"
+#glance_backend_ceph: no
+#glance_backend_file: yes
 
 # This isn't useful with Ceph but can be useful for iscsi storage appliances
 # We haven't tested it, don't use it in production yet
-#enable_glance_image_cache: "no"
+#enable_glance_image_cache: no
 ```
 
 ## Cinder
@@ -193,13 +192,14 @@ enable_cinder_backup: no
 #cinder_volume_group: cinder-volumes
 
 # For Pure Storage/EMC and LVM, enable backend_iscsi
-#enable_cinder_backend_iscsi: "{{ enable_cinder_backend_lvm | bool or enable_cinder_backend_zfssa_iscsi | bool }}"
+#enable_cinder_backend_iscsi: <yes or no>
 ```
 
 ## iscsid
 
 ```yaml
-#enable_iscsid: "{{ (enable_cinder | bool and enable_cinder_backend_iscsi | bool) or enable_ironic | bool }}"
+# set enable_iscsid to yes when enable_cider and enable_cinder_backend_iscsi equal yes
+enable_iscsid: no
 ```
 
 ## Horizon

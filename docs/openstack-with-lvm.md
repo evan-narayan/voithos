@@ -1,15 +1,12 @@
 # OpenStack
-# Online Install with Ceph Storage
+# Online Install with LVM Storage
 
-This installation procedure is our most common use-case. It requires that
-Ceph already be installed. If you haven't installed Ceph yet, follow the
-[Ceph install guide](/ceph-install.html) first.
+This deployment model uses storage nodes that carve out volumes using LVM and present them using
+iSCSI. These are ideally dedicated storage nodes, but can also be hyperconverged.
 
+## Prepare LVM
 
-## Prepare Ceph
-
-1. [**Create Ceph OSD pools for OpenStack**](/ceph-pools.html)
-1. [**Create Ceph keyring, ceph.conf, glance-api.conf and cinder-volume.conf files**](/openstack-ceph.html)
+1. [**Create the LVM volume group**](/openstack-lvm.html)
 
 ## Install OpenStack
 
@@ -17,8 +14,8 @@ Ceph already be installed. If you haven't installed Ceph yet, follow the
 1. (optional) Deploy a local Docker registry
    - [**Launch a local Docker registry**](/registry.html) and
    - [**Sync Kolla images to it**](/openstack-registry-mirror.html)
-1. [**Generate unique passwords for OpenStack service**](/openstack-kolla-passwords.html)
-   - Create `passwords.yml`
+1. [**Generate unique passwords for OpenStack service**](/openstack-kolla-passwords.html) - Create
+   `passwords.yml`
 1. [**Create globals.yml for Kolla-Ansible**](/openstack-kolla-globals.html) - Create `globals.yml`
 1. [**Write the inventory file for Kolla-Ansible**](/openstack-kolla-inventory.html)
 1. [**Collect or generate HTTPS certificates**](/openstack-kolla-certificates.md)

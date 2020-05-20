@@ -26,7 +26,7 @@ to learn more.
 
 # Installation Procedures
 
-- [Online Installation with Ceph-backed volumes](openstack-with-ceph.html)
-- OpenStack with LVM-backed volumes
+- [**Online Installation with Ceph-backed volumes**](/openstack-with-ceph.html)
+- [**OpenStack with LVM-backed volumes**](/openstack-with-lvm.html)
 
 ---

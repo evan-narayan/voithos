@@ -1,3 +1,12 @@
+
+
+voi·thos (voï-thós) n. One who or that which assists; a
+subordinate or helper. — adj. 1. Holding a subordinate or
+auxiliary place, office or rank. 2. Affording aid; assisting.
+From the Greek βοηθός (voïthós)
+
+### Private Cloud Helper
+
 Voithos is a command-line toolkit used to deploy and manage the various services and utilities that
 make up private clouds. Voithos was formerly known as the Breqwatr Deployment Tool.
 

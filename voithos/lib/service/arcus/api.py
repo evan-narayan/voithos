@@ -56,7 +56,7 @@ def start(
             'bash -c "'
             "/env_config.py && "
             "pip install -e . && "
-            "gunicorn --timeout 7200 --error-logfile=- --access-logfile '-' "
+            "gunicorn --workers 4 --error-logfile=- --access-logfile '-' "
             '--reload --bind 0.0.0.0:1234 arcusapi.wsgi:app" '
         )
     name = "arcus_api"

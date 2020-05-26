@@ -54,6 +54,12 @@ voithos service arcus api start --help
 ```
 
 
+### LDAP Config
+
+If Active Directory LDAP will be used, follow the [Arcus LDAP config guide](/arcus-ldap-config.html).
+
+
+
 ## Arcus Manager
 
 Arcus Manager (arcus-mgr) is a distributed task-runner that operates Arcus's periodic automation.

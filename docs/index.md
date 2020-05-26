@@ -44,4 +44,4 @@ pip install .
   An open-source cloud storage solution
 - [**Installing OpenStack**](/openstack-install.html):
   Private clouds providing virtualisation, SDN, and more
-- [**Installing Arcus**](/arcus-install.html)
+- [**Installing Arcus**](/arcus-install.html): Breqwatr's OpenStack self-service web portal

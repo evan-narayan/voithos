@@ -1,5 +1,7 @@
 # OpenStack LVM Storage Setup
 
+## Create LVM Volume Group
+
 Choose a volume group name. By default, we use `cinder-volumes`.
 
 Configure the volume group on each OpenStack cinder-volume node.
@@ -29,3 +31,44 @@ logical volumes.
 ```bash
 lvdisplay cinder-volumes
 ```
+
+
+## Configure Nova-Compute servers
+
+On each nova-compute node, iSCSI is needed to mount the images.
+
+### Load ConfigFS
+
+```bash
+modprobe configfs
+```
+Also add the configfs module to /etc/modules.
+
+Rebuild initramfs
+
+```bash
+update-initramfs -u
+```
+
+Confirm the service is running
+
+```bash
+systemctl status sys-kernel-config.mount
+```
+
+Confirm the mount is present
+
+```bash
+mount | grep /sys/kernel/config
+```
+
+
+### Disable iscsid on the host
+
+```bash
+systemctl stop open-iscsi
+systemctl disable  open-iscsi
+```
+
+
+

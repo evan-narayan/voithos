@@ -88,12 +88,40 @@ Microsoft Active Directory.
 
 - [OpenStack LDAP documentation](https://docs.openstack.org/keystone/pike/admin/identity-integrate-with-ldap.html)
 - [Keystone config reference](https://docs.openstack.org/ocata/config-reference/identity/samples/keystone.conf.html)
+- [Kolla-Ansible's keystone.conf Jinja2 template](https://github.com/openstack/kolla-ansible/blob/master/ansible/roles/keystone/templates/keystone.conf.j2)
 
-```
+By creating the domains directory, Kolla-Ansible's Jinja2 tempalte will automatically enable
+`domain_specific_drivers_enabled`, so it doesn't need to set. The `[identity] driver` key still
+needs to be defined.
+
+```ini
 # config/keystone/keystone.conf
 
 [identity]
 driver = ldap
+
+```
+
+## Keystone Domain-specific path: config/keystone/domains/keystone.DOMAIN\_NAME.conf
+
+### Domain Creation
+
+In the OpenStack cli, create the domain
+
+```bash
+openstack domain create <name>
+```
+
+### Domain Configuration
+
+When using LDAP with Keystone, each domain's data should be configured in its own file.
+
+Where the target domain to be "example.com", you would create a file named
+`config/keystone/domains/keystone.example.com.conf` to define the domain details.
+
+
+```ini
+# config/keystone/domains/keystone.DOMAIN_NAME.conf
 
 [ldap]
 
@@ -133,3 +161,4 @@ group_desc_attribute = description
 # debug levels of 0,255, and 4095 are common, with 4095 the most verbose
 debug_level = 0
 ```
+

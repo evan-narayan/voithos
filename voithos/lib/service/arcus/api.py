@@ -20,6 +20,7 @@ def start(
     ceph_dir,
     https,
     port,
+    secret,
 ):
     """ Start the arcus api """
     image = f"breqwatr/arcus-api:{release}"
@@ -35,6 +36,7 @@ def start(
         "SQL_PASSWORD": sql_password,
         "SQL_IP": sql_ip,
         "CEPH_ENABLED": str(ceph_enabled).lower(),
+        "ARCUS_INTEGRATION_SECRET": secret,
     }
     env_str = env_string(env_vars)
     daemon = "-d --restart=always"

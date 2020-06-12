@@ -39,6 +39,7 @@ def pull(release):
     "--https/--http", default=True, required=True, help="Does OpenStack use HTTPS or HTTP"
 )
 @click.option("--port", default=1234, help="Override the listen port")
+@click.option("--secret", required=True, help="Secret key / password for integrations")
 @click.command(name="start")
 def start(
     release,
@@ -51,6 +52,7 @@ def start(
     ceph_dir,
     https,
     port,
+    secret,
 ):
     """ Launch the arcus-api service """
     click.echo("starting arcus api")
@@ -65,6 +67,7 @@ def start(
         ceph_dir=ceph_dir,
         https=https,
         port=port,
+        secret=secret,
     )
 
 

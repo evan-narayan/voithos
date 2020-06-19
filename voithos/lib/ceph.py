@@ -31,3 +31,21 @@ def zap_disk(disk):
     """ Erase filesystem from a given disk """
     shell(f"wipefs -a {disk}")
     shell(f"dd if=/dev/zero of={disk} bs=4096k count=100")
+
+
+def ceph_destroy(release, inventory_path, ssh_key_path, verbose=False):
+    """ Uninstall ceph and remove ceph related data"""
+    image = f"breqwatr/ceph-ansible:{release}"
+    print(image)
+    verbose_str = " -vvvv " if verbose else ""
+    run_cmd = (
+        "ansible-playbook -i /ceph-inventory.yml -e ireallymeanit=yes"
+        " /var/repos/ceph-ansible/infrastructure-playbooks/purge-cluster.yml"
+    )
+    cmd = (
+        "docker run --rm --network host --workdir /var/repos/ceph-ansible "
+        + docker.volume_opt(inventory_path, "/ceph-inventory.yml")
+        + docker.volume_opt(ssh_key_path, "/root/.ssh/id_rsa")
+        + f"{verbose_str} {image} {run_cmd}"
+    )
+    shell(cmd)

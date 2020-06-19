@@ -49,6 +49,22 @@ def zap_disk(disk, force):
     ceph.zap_disk(disk)
 
 
+@click.option(
+    "--release", "-r", required=True, help="Ceph-Ansible stable branch [3.2, 4.0, 5.0]",
+)
+@click.option("--inventory", "-i", required=True, help="Ceph-Ansible inventory file path")
+@click.option(
+    "--ssh-key", "-s", "ssh_key", required=True, help="Ceph-Ansible grou_vars directory path",
+)
+@click.option(
+    "--verbose/--no-verbose", default=False, help="Run ansible-playbook with -vvvv",
+)
+@click.command(name="ceph-destroy")
+def ceph_destroy(release, inventory, ssh_key, verbose):
+    """ Uninstall ceph and erase all ceph related data"""
+    ceph.ceph_destroy(release, inventory, ssh_key, verbose=verbose)
+
+
 def get_ceph_group():
     """ Return the Ceph click group """
 
@@ -58,4 +74,5 @@ def get_ceph_group():
 
     ceph_group.add_command(ceph_ansible)
     ceph_group.add_command(zap_disk)
+    ceph_group.add_command(ceph_destroy)
     return ceph_group

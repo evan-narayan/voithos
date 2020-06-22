@@ -3,6 +3,7 @@
 
 import click
 import voithos.lib.service.registry as registry
+from voithos.lib.system import error
 
 
 @click.option("--ip", "ip_address", default="0.0.0.0", help="[optional] bind IP address")
@@ -17,6 +18,8 @@ def start(ip_address, port):
 @click.command(name="list-images")
 def list_images(registry_url):
     """ List the images in a registry """
+    if not registry_url.startswith('http'):
+        error("ERROR: Registry URL must start with protocol (http/https)", exit=True)
     registry.list_images(registry_url)
 
 

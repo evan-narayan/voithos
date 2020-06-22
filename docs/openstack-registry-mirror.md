@@ -15,7 +15,7 @@ synchronized for the purpose of updates.
 
 ```bash
 # Load all OpenStack images to the local registry
-voithosservice registry sync-openstack-images \
+voithos service registry sync-openstack-images \
   --release <openstack release> \
   <registry ip:port>
 

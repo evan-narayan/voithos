@@ -198,6 +198,9 @@ def smoke_test(release, openrc, image_path, **kwargs):
 @click.command(name="sync-images-to-registry")
 def sync_local_registry(release, keep, registry):
     """ Pull OpenStack images, push local registry """
+    if registry.startswith("http"):
+        error("Registry must not start with http/https.", exit=False)
+        error("If push failed, ensure /etc/docker/daemon.json is correct", exit=True)
     openstack.sync_local_registry(release, keep, registry)
 
 

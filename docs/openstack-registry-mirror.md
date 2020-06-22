@@ -15,12 +15,10 @@ synchronized for the purpose of updates.
 
 ```bash
 # Load all OpenStack images to the local registry
-voithos service registry sync-openstack-images \
-  --release <openstack release> \
-  <registry ip:port>
+voithos openstack sync-images-to-registry --release <openstack release> <proto://registry ip:port>
 
 # sync-openstack-images example
-voithos service registry sync-openstack-images -r stein 10.10.10.9:5000
+voithos service registry sync-openstack-images -r stein http://10.10.10.9:5000
 ```
 
 If you need to sync a specific image, for instance to update one service,

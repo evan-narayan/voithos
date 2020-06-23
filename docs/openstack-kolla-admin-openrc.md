@@ -7,9 +7,9 @@ and create the initial regular users.
 # creates ./admin-openrc.sh
 voithos openstack get-admin-openrc \
   --release train \
-  --globals-file globals.yml \
-  --passwords-file passwords.yml \
-  --inventory-file inventory
+  --globals globals.yml \
+  --passwords passwords.yml \
+  --inventory inventory
 ```
 
 To use this file, execute `source admin-openrc` prior to running the openstack

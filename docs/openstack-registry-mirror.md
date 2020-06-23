@@ -18,7 +18,7 @@ synchronized for the purpose of updates.
 voithos openstack sync-images-to-registry --release <openstack release> <proto://registry ip:port>
 
 # sync-openstack-images example
-voithos service registry sync-openstack-images -r stein http://10.10.10.9:5000
+voithos service registry sync-openstack-images -r train http://10.10.10.9:5000
 ```
 
 If you need to sync a specific image, for instance to update one service,
@@ -29,6 +29,6 @@ the `sync-image` command is available:
 vouthos service registry sync-image --tag <tag> <registry ip:port> <repository name>
 
 # sync-image example
-voithos service registry sync-image --tag stein 10.10.10.9:5000 ubuntu-source-mariadb
+voithos service registry sync-image --tag train 10.10.10.9:5000 ubuntu-source-mariadb
 ```
 

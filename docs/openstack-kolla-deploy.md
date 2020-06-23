@@ -15,11 +15,11 @@ Use the following command to deploy OpenStack:
 # Note: --config-dir is optional and can be ommitted
 
 voithos openstack kolla-ansible deploy \
-  --release stein \
-  --ssh-private-key-file ~/.ssh/id_rsa \
-  --globals-file globals.yml \
-  --passwords-file passwords.yml \
-  --inventory-file inventory \
-  --certificates-dir certificates/ \
-  --config-dir config/
+  --release train \
+  --ssh-private-key ~/.ssh/id_rsa \
+  --globals globals.yml \
+  --passwords passwords.yml \
+  --inventory inventory \
+  --certificates certificates/ \
+  --config config/
 ```

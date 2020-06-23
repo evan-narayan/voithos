@@ -19,9 +19,9 @@ Kolla-Ansible Docker image, orchestrated by Voithos:
 ```bash
 voithos openstack kolla-ansible bootstrap-servers \
   --release train \
-  --ssh-private-key-file ~/.ssh/id_rsa \
-  --globals-file globals.yml \
-  --passwords-file passwords.yml \
-  --inventory-file inventory \
-  --certificates-dir certificates
+  --ssh-private-key ~/.ssh/id_rsa \
+  --globals globals.yml \
+  --passwords passwords.yml \
+  --inventory inventory \
+  --certificates certificates
 ```

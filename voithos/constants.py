@@ -91,5 +91,16 @@ KOLLA_IMAGE_REPOS["train"].extend(
         "ubuntu-source-prometheus-node-exporter",
         "ubuntu-source-prometheus-openstack-exporter",
         "ubuntu-source-prometheus-server",
+        "ubuntu-source-prometheus-alertmanager",
+        "ubuntu-source-prometheus-cadvisor",
+        "ubuntu-source-kibana",
+        "ubuntu-source-gnocchi-api",
+        "ubuntu-source-gnocchi-metricd",
+        "ubuntu-source-gnocchi-statsd",
+        "ubuntu-source-ceilometer-compute",
+        "ubuntu-source-ceilometer-ipmi",
+        "ubuntu-source-ceilometer-notification",
+        "ubuntu-source-ceilometer-central",
+        "ubuntu-source-grafana"
     ]
 )

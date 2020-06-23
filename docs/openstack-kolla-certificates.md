@@ -43,8 +43,8 @@ named `certificates/` will be created in the directory specified by `--config-di
 
 voithos openstack get-certificates \
   --release train \
-  --globals-file globals.yml \
-  --passwords-file passwords.yml
+  --globals globals.yml \
+  --passwords passwords.yml
 ```
 
 ## Using your own certificates

@@ -39,11 +39,14 @@ def start(
     daemon = "-d --restart=always"
     run = ""
     dev_mount = ""
+    network = "--network host"
     if DEV_MODE:
         if "ARCUS_CLIENT_DIR" not in os.environ:
             error("ERROR: must set $ARCUS_CLIENT_DIR when $VOITHOS_DEV==true", exit=True)
         client_dir = os.environ["ARCUS_CLIENT_DIR"]
         assert_path_exists(client_dir)
+        https_network = "" if cert_path is None else f"-p 0.0.0.0:{https_port}:{https_port}"
+        network = f"-p 0.0.0.0:{http_port}:{http_port} {https_network}"
         run = (
             'bash -c "'
             "/env_config.py && "
@@ -60,7 +63,7 @@ def start(
     hosts_mount = "-v /etc/hosts:/etc/hosts"
     cmd = (
         f"docker run --name {name} "
-        f"{daemon} --network host {env_str} "
+        f"{daemon} {network} {env_str} "
         f"{cert_vol_mounts} {dev_mount} {log_mount} {hosts_mount} "
         f"{image} {run}"
     )
@@ -68,4 +71,5 @@ def start(
 
 
 def rebuild():
+    """ run grunt rebuild for dev mode """
     shell("docker exec -it arcus_client grunt rebuild")

@@ -47,6 +47,7 @@ def start(
         if ceph_dir is None:
             error("ERROR: --ceph-dir is required for --ceph", exit=True)
         ceph_mount = volume_opt(ceph_dir, "/etc/ceph")
+    network = "--network host"
     if DEV_MODE:
         if "ARCUS_API_DIR" not in os.environ:
             error("ERROR: must set $ARCUS_API_DIR when $VOITHOS_DEV==true", exit=True)
@@ -54,6 +55,7 @@ def start(
         assert_path_exists(api_dir)
         daemon = "-it --rm"
         dev_mount = volume_opt(api_dir, "/app")
+        network = f"-p 0.0.0.0:{port}:{port}"
         run = (
             'bash -c "'
             "/env_config.py && "
@@ -68,8 +70,7 @@ def start(
     log_mount = "-v /var/log/arcus-api:/var/log/arcusweb"
     hosts_mount = "-v /etc/hosts:/etc/hosts"
     cmd = (
-        f"docker run --name {name} {daemon} "
-        f"--network host "
+        f"docker run --name {name} {daemon} {network} "
         f"{hosts_mount} {log_mount} "
         f"{env_str} {ceph_mount} {dev_mount} {image} {run}"
     )

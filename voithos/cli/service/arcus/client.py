@@ -68,6 +68,7 @@ def start(
 
 @click.command(name="rebuild")
 def rebuild():
+    """ Run grunt rebuild for arcus development """
     arcus_client.rebuild()
 
 

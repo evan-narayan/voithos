@@ -21,7 +21,6 @@ setup(
         "boto3",
         "flake8",
         "pylint",
-        "black",
         "pytest",
         "mysql-connector",
         "requests",

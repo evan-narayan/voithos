@@ -91,7 +91,7 @@ network:
     bond0:
       parameters:
         mode: active-backup
-        primary: eno1
+        mii-monitor-interval: 100
       interfaces: [eno1, eno2]
       dhcp4: no
       mtu: 9000

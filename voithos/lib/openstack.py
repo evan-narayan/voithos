@@ -1,12 +1,15 @@
 """ OpenStack lib """
-
 import os
 
 from click import echo
 
+import voithos.lib.aws.s3 as s3
 from voithos.lib.system import shell, error, assert_path_exists
 from voithos.lib.docker import volume_opt
 from voithos.constants import KOLLA_IMAGE_REPOS
+
+
+SUPPORTED_IMAGES = ["windows2012", "windows2016", "windows2019"]
 
 
 def kolla_ansible_genpwd(release):
@@ -192,3 +195,14 @@ def sync_local_registry(release, keep, registry):
             echo("Deleting local image")
             shell(f"docker rmi {dh_image}")
             shell(f"docker rmi {local_image}")
+
+
+def download_image(image, output_path=None):
+    """ Download an OpenStack image from S3. Save to ./ unless output is not None """
+    if image not in SUPPORTED_IMAGES:
+        raise NotImplementedError(f"Image {image} is not implemented")
+    filename = f"{image}.qcow2"
+    path = f"./{filename}" if output_path is None else output_path
+    bucket = "breqwatr-private-vm-images"
+    echo(f"Downloading {path}, please wait. This may take a while...")
+    s3.download(path, bucket, filename)

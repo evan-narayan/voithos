@@ -204,6 +204,31 @@ def sync_local_registry(release, keep, registry):
     openstack.sync_local_registry(release, keep, registry)
 
 
+@click.option("--image", "-i", required=False, default=None, help="specify image to download")
+@click.option("--output", "-o", required=False, default=None, help="Optional file output path")
+@click.command(name="download")
+def download_image(image, output):
+    """ Download a Glance image from the internet """
+    if image is None or image not in openstack.SUPPORTED_IMAGES:
+        click.echo("USAGE: Either --image / -i is required.")
+        click.echo("The following images are supported:")
+        for supported_image in openstack.SUPPORTED_IMAGES:
+            click.echo(f"  {supported_image}")
+        return
+    openstack.download_image(image, output_path=output)
+
+
+def get_image_group():
+    """ Return the image group """
+
+    @click.group(name="image")
+    def image():
+        """ Manage Glance images"""
+
+    image.add_command(download_image)
+    return image
+
+
 def get_openstack_group():
     """ Return the OpenStack click group """
 
@@ -220,4 +245,5 @@ def get_openstack_group():
     openstack_group.add_command(smoke_test)
     openstack_group.add_command(get_globals_template)
     openstack_group.add_command(sync_local_registry)
+    openstack_group.add_command(get_image_group())
     return openstack_group

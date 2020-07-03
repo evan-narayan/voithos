@@ -136,8 +136,26 @@ def test_sync_local_registry(mock_shell):
     runner = CliRunner()
     result = runner.invoke(
         voithos.cli.openstack.sync_local_registry,
-        ["--release", "train", "--keep", "registry.example.com:5000",],
+        ["--release", "train", "--keep", "registry.example.com:5000"],
         catch_exceptions=False,
     )
     assert result.exit_code == 0, result.output
     assert mock_shell.called
+
+
+def test_image_group():
+    """ test the image group cli call """
+    runner = CliRunner()
+    result = runner.invoke(voithos.cli.openstack.get_image_group(), catch_exceptions=False)
+    assert result.exit_code == 0, result.output
+
+
+@patch("voithos.lib.openstack.s3")
+def test_image_download(mock_s3):
+    """ test running image download"""
+    runner = CliRunner()
+    result = runner.invoke(
+        voithos.cli.openstack.download_image, ["--image", "windows2019"], catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.output
+    assert mock_s3.download.called

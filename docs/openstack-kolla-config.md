@@ -94,13 +94,6 @@ By creating the domains directory, Kolla-Ansible's Jinja2 tempalte will automati
 `domain_specific_drivers_enabled`, so it doesn't need to set. The `[identity] driver` key still
 needs to be defined.
 
-```ini
-# config/keystone/keystone.conf
-
-[identity]
-driver = ldap
-
-```
 
 ## Keystone Domain-specific path: config/keystone/domains/keystone.DOMAIN\_NAME.conf
 
@@ -122,6 +115,10 @@ Where the target domain to be "example.com", you would create a file named
 
 ```ini
 # config/keystone/domains/keystone.DOMAIN_NAME.conf
+
+[identity]
+driver = ldap
+
 
 [ldap]
 

@@ -9,7 +9,7 @@ from voithos.lib.docker import volume_opt
 from voithos.constants import KOLLA_IMAGE_REPOS
 
 
-SUPPORTED_IMAGES = ["windows2012", "windows2016", "windows2019"]
+SUPPORTED_IMAGES = ["windows2012", "windows2016", "windows2019", "cirros", "ubuntu1804"]
 
 
 def kolla_ansible_genpwd(release):

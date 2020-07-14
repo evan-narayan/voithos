@@ -168,7 +168,11 @@ PermitRootLogin prohibit-password
 Ansible will expect Python to be installed on each OpenStack node.
 
 ```bash
-apt-get install python
+# Install Python packages
+apt-get -y install python python3 python-pip
+
+# Install python docker library
+pip install docker
 ```
 
 

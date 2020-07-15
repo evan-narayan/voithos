@@ -21,5 +21,11 @@ def get_client(name):
     """ decode and parse ECR token into usable dict """
     iam = get_aws_iam()
     session = boto3.Session(aws_access_key_id=iam["id"], aws_secret_access_key=iam["secret"])
-    client = session.client(name, region_name="ca-central-1")
-    return client
+    return session.client(name, region_name="ca-central-1")
+
+
+def get_resource(name):
+    """ return an aws resource object """
+    iam = get_aws_iam()
+    session = boto3.Session(aws_access_key_id=iam["id"], aws_secret_access_key=iam["secret"])
+    return session.resource(name)

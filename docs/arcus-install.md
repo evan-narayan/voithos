@@ -93,3 +93,28 @@ Start the client
 ```bash
 voithos service arcus client start --help
 ```
+
+
+## Configure the service account
+
+### Create the SA in OpenStack
+
+This requires that the openstack client be set up somewhere, and assumes you have an openrc
+file located at `/etc/kolla/admin-openrc.sh`. Adjust accordingly.
+
+```bash
+openstack user create arcusadmin --password <service account password>
+openstack role add --user arcusadmin --project admin admin
+openstack role add --user arcusadmin --project admin _member_
+openstack role add --user arcusadmin --domain default admin
+```
+
+### Set the SA in Arcus
+
+```bash
+voithos service arcus api set-service-account \
+  --api-url https://<external vip>/api \
+  --username arcusadmin \
+  --password <password> \
+  --auth-url https://<external vip/fqdn>:5000/v3
+```

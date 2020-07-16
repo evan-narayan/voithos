@@ -118,3 +118,12 @@ voithos service arcus api set-service-account \
   --password <password> \
   --auth-url https://<external vip/fqdn>:5000/v3
 ```
+
+
+## Configure a volume type
+
+Arcus works best when a custom volume type is defined (instead of using `__DEFAULT__`).
+
+```bash
+openstack volume type create --public --property volume_backend_name='<backend-name>' <name>
+```

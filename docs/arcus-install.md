@@ -124,6 +124,28 @@ cat globals.yml  | grep kolla_external_vip_address
 ---
 
 
+## Arcus Client
+
+Arcus Client (arcus-client) is the web UI built to leverage the Arcus API.
+
+
+Pull the image from Breqwatr's private registry
+
+```bash
+voithos service arcus client pull --release 7.5
+```
+
+Start the client. When prompted for the API IP, enter the address the API will listen on, even if
+it isn't there yet.
+
+```bash
+voithos service arcus client start --help
+```
+
+
+---
+
+
 ## Arcus API
 
 Arcus API (arcus-api)is the orchestration agent that operates against OpenStack Ceph, and other
@@ -182,27 +204,6 @@ Launch the arcus-mgr service
 
 ```bash
 voithos service arcus mgr start --help
-```
-
-
----
-
-
-## Arcus Client
-
-Arcus Client (arcus-client) is the web UI built to leverage the Arcus API.
-
-
-Pull the image from Breqwatr's private registry
-
-```bash
-voithos service arcus client pull --release 7.5
-```
-
-Start the client
-
-```bash
-voithos service arcus client start --help
 ```
 
 

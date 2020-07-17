@@ -69,7 +69,7 @@ def get_globals_template(release):
     "--config",
     "-c",
     "config_dir",
-    required=False,
+    required=True,
     default=None,
     help="Path of config/ directory  [optional]",
 )
@@ -194,14 +194,15 @@ def smoke_test(release, openrc, image_path, **kwargs):
 
 @click.option("--release", "-r", required=True, help="OpenStack release name (OS_RELEASE)")
 @click.option("--keep/--delete-local", default=True, help="Keep or delete local images")
+@click.option("--image", required=False, default=None, help="Optionally sync a single image")
 @click.argument("registry")
 @click.command(name="sync-images-to-registry")
-def sync_local_registry(release, keep, registry):
+def sync_local_registry(release, keep, registry, image):
     """ Pull OpenStack images, push local registry """
     if registry.startswith("http"):
         error("Registry must not start with http/https.", exit=False)
         error("If push failed, ensure /etc/docker/daemon.json is correct", exit=True)
-    openstack.sync_local_registry(release, keep, registry)
+    openstack.sync_local_registry(release, keep, registry, image=image)
 
 
 @click.option("--image", "-i", required=False, default=None, help="specify image to download")

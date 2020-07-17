@@ -177,24 +177,37 @@ def kolla_ansible_exec(
     shell(cmd)
 
 
-def sync_local_registry(release, keep, registry):
+def _sync_image(repo, release, keep, registry):
+    """ Sync a single image to the registry """
+    dh_image = f"breqwatr/{repo}:{release}"
+    local_image = f"{registry}/{dh_image}"
+    shell(f"docker pull {dh_image}")
+    shell(f"docker tag {dh_image} {local_image}")
+    shell(f"docker push {local_image}")
+    if not keep:
+        echo(f"Deleting local images {dh_image} and {local_image}")
+        shell(f"docker rmi {dh_image}")
+        shell(f"docker rmi {local_image}")
+
+
+def sync_local_registry(release, keep, registry, image=None):
     """ Pull Kolla docker images and push them to local registry """
     if release not in KOLLA_IMAGE_REPOS:
         error(f"ERROR: release {release} is not supported", exit=True)
     total_images = len(KOLLA_IMAGE_REPOS[release])
     index = 1
+    if image is not None:
+        if image not in KOLLA_IMAGE_REPOS[release]:
+            if f"ubuntu-source-{image}" in KOLLA_IMAGE_REPOS[release]:
+                image = f"ubuntu-source-{image}"
+            else:
+                error(f"Invalid repository {image}", exit=True)
+        _sync_image(image, release, keep, registry)
+        return
     for repo in KOLLA_IMAGE_REPOS[release]:
-        dh_image = f"breqwatr/{repo}:{release}"
-        echo(f"Progress: {index}/{total_images} - Image: {dh_image}")
+        echo(f"Progress: {index}/{total_images} - Image: {repo}")
+        _sync_image(repo, release, keep, registry)
         index += 1
-        local_image = f"{registry}/{dh_image}"
-        shell(f"docker pull {dh_image}")
-        shell(f"docker tag {dh_image} {local_image}")
-        shell(f"docker push {local_image}")
-        if not keep:
-            echo("Deleting local image")
-            shell(f"docker rmi {dh_image}")
-            shell(f"docker rmi {local_image}")
 
 
 def download_image(image, output_path=None):

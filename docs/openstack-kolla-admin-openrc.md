@@ -15,4 +15,10 @@ voithos openstack get-admin-openrc \
 To use this file, execute `source admin-openrc` prior to running the openstack
 command line commands.
 
-This file can also be used within BWDT's [containerized command-line](/openstack-cli.html)
+---
+
+## Suggestion
+
+It's a good idea to SCP this file to the control nodes of your cluster. It will make working on
+OpenStack easier. By convention Breqwatr likes to place it in `/etc/kolla/` on each control node
+server.

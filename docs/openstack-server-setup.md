@@ -3,7 +3,6 @@
 1. Verify hardware requirements
 1. Install Ubuntu 18.04
 1. Configure Networking
-1. Disable the `iscisd.socket` service
 1. Install Python
 
 ## Recommended Hardware Requirements
@@ -123,15 +122,6 @@ network:
 ```
 
 
-## Disabling the iscsid.socket service
-
-The `iscsid.socket` service will run in a Docker container, so the host service
-can cause conflicts. Disable it on each host:
-
-```bash
-systemctl stop iscsid.socket
-systemctl disable iscsid.socket
-```
 
 
 ## SSH Settings
@@ -171,7 +161,7 @@ Ansible will expect Python to be installed on each OpenStack node.
 # Install Python packages
 apt-get -y install python python3 python-pip
 
-# Install python docker library
+# Install python docker library - this does not install Docker itself
 pip install docker
 ```
 
@@ -188,3 +178,14 @@ client network IP if Ceph has its network segregated too.
 DNS can be a solution to avoiding this, but generally the OpenStack internal
 network is not the network with the default gateway, so `/etc/hosts` tends to
 be a better option.
+
+
+## Disable NTP on the hosts
+
+Chrony will handle NTP for the OpenStack servers, so disable the NTP service in systemctl.
+
+```bash
+# If it's not found, skip this
+systemctl disable ntp
+```
+

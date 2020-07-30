@@ -15,7 +15,7 @@ def test_pxe_group():
 
 @patch("voithos.lib.service.pxe.shell")
 def test_pxe_start(mock_shell):
-    """ test ceph-ansible cli call """
+    """ test pxe start cli call """
     runner = CliRunner()
     result = runner.invoke(
         voithos.cli.service.pxe.start,

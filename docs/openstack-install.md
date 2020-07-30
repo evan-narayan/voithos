@@ -28,5 +28,6 @@ to learn more.
 
 - [**Online Installation with Ceph-backed volumes**](/openstack-with-ceph.html)
 - [**Online Installation with LVM-backed volumes**](/openstack-with-lvm.html)
+- [**Offline Installation with iSCSI-backed volumes**](/offline-openstack-with-iscsi.html)
 
 ---

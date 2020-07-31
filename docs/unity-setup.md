@@ -143,3 +143,7 @@ filesystem_store_datadirs = /glance-1:100
 filesystem_store_datadirs = /glance-2:200
 store_description = "Shared filesystem store"
 ```
+
+**Note**: Don't forget to increase the Nova local disk reservation accordingly if you're colocating
+Glance with a Nova compute node. If you have a 200GB NFS share, set asside 400GB extra on the host,
+as Nova will see each mount point as a distinct volume that it might use for ephemeral disks.

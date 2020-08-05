@@ -147,3 +147,28 @@ store_description = "Shared filesystem store"
 **Note**: Don't forget to increase the Nova local disk reservation accordingly if you're colocating
 Glance with a Nova compute node. If you have a 200GB NFS share, set asside 400GB extra on the host,
 as Nova will see each mount point as a distinct volume that it might use for ephemeral disks.
+
+
+---
+
+# Multipath configuration
+
+If you intend to use Multipath with the Unity iSCSI, this section needs to be executed too.
+
+
+## globals.yml
+
+```yaml
+enable_multipathd: yes
+```
+
+## Nova config file
+
+Enable multipath in Nova Compute's configuration file.
+
+`vi config/nova/nova-compute.conf`
+
+```ini
+[libvirt]
+volume_use_multipath = True
+```

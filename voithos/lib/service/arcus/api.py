@@ -140,8 +140,7 @@ def _get_http_auth_headers(username, password, api_url):
     projects = _get_projects(api_url, token)
     admin_project = next((proj for proj in projects if proj["name"] == "admin"), None)
     if admin_project is None:
-        sys.stderr.write("ERROR: 'admin' project must exist in this cloud\n")
-        sys.exit(1)
+        error("ERROR: No 'admin' project found - check roles?", exit=True)
     return {"X-Auth-Token": token, "X-Project-ID": admin_project["id"]}
 
 
@@ -150,7 +149,7 @@ def set_service_account(auth_url, username, password, api_url):
     headers = _get_http_auth_headers(username, password, api_url)
     intgs_url = f"{api_url}/integrations"
     list_resp = requests.get(intgs_url, headers=headers, verify=False)
-    intgs = list_resp.json()["integrations"]
+    intgs = list_resp.json()["integrations"] if "integrations" in list_resp.json() else []
     sa_intg = next((intg for intg in intgs if intg["type"] == "Openstacksa"), None)
     sa_exists = sa_intg is not None
     sa_data = {

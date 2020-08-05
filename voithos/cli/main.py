@@ -3,6 +3,7 @@
 import sys
 
 import click
+import urllib3
 
 import voithos.cli.ceph as ceph
 import voithos.cli.config as config
@@ -10,6 +11,10 @@ import voithos.cli.openstack as openstack
 import voithos.cli.service.service as service
 import voithos.constants as constants
 from voithos.lib.system import error
+
+
+# Globally disable https warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 # Requires python 3

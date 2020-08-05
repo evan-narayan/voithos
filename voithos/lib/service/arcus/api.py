@@ -119,7 +119,11 @@ def _get_token(api_url, username, password):
         'password': password,
         'domain_name': "default"}
     token_response = requests.post(token_url, json=req_data, verify=False)
-    return token_response.headers["X-Subject-Token"]
+    response_headers = token_response.headers
+    token_header_name = "X-Subject-Token"
+    if token_header_name not in response_headers:
+        error("ERROR: Failed to get token - Authentication failed.", exit=True)
+    return response_headers[token_header_name]
 
 
 def _get_projects(fqdn, token):

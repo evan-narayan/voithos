@@ -171,6 +171,7 @@ def kolla_ansible_exec(
         rm_arg = "--rm"
     cmd = (
         f"docker run {rm_arg} --network host "
+        "-e PY_COLORS=1 -e ANSIBLE_FORCE_COLOR=1 "
         f"{inv_vol} {globals_vol} {passwd_vol} {ssh_vol} {cert_vol} {config_vol}"
         f"breqwatr/kolla-ansible:{release} {run_cmd}"
     )

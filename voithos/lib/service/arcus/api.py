@@ -1,7 +1,6 @@
 """ lib for arcus services """
 
 import os
-import sys
 
 import requests
 import mysql.connector as connector

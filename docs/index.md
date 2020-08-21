@@ -52,6 +52,6 @@ pip install .
 - [**Installing Ceph**](/ceph-install.html):
   An open-source cloud storage solution
 - [**Installing OpenStack**](/openstack-install.html):
-  Private clouds providing virtualisation, SDN, and more
+  Private clouds providing virtualization, SDN, and more
 - [**Installing Arcus**](/arcus-install.html): Breqwatr's OpenStack self-service web portal
 - [**Configure Grafana And Prometheus**](/grafana-prometheus.html): Monitoring solution

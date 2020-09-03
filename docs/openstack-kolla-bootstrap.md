@@ -23,5 +23,6 @@ voithos openstack kolla-ansible bootstrap-servers \
   --globals globals.yml \
   --passwords passwords.yml \
   --inventory inventory \
-  --certificates certificates
+  --certificates certificates \
+  --config config/
 ```

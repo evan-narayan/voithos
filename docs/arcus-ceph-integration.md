@@ -11,6 +11,7 @@ Breqwatr prefers to deploy it on the OpenStack control nodes so it leverages Ope
 you've done the same, then the `--api-addr` used throughout this document is likely:
 `http://<openstack-vip>:1234`.
 
+
 ## Show the Ceph integration-type
 
 ```bash
@@ -110,4 +111,38 @@ voithos service arcus api integrations create \
   --field fsid 4a241f8b-203e-4941-90c4-6f4d93e8e0c3 \
   --field ratio 0.85 \
   --field pool volumes
+```
+
+
+## Link the Integration to Cinder's Ceph volume type
+
+Now that Arcus knows how to integrate with Ceph, you need to tell it which volume type is connected
+to that Ceph cluster. This is how Arcus knows which volumes support the attached Ceph cluster's
+features.
+
+First, collect the volume type ID in OpenStack:
+
+```bash
+openstack volume type list
+# Example ID: 28cee83b-b92f-475a-852d-4ddacd07ddbf
+```
+
+Next, list your integrations to get the ID, and link it to the volume type ID.
+If you have more than one Cinder type connected to the same Ceph cluster, you can pass each type
+ID as comma-seperated values.
+
+```bash
+# List the integrations
+voithos service arcus api integrations list \
+  --username arcusadmin \
+  --password password\
+  --api-addr http://127.0.0.1:1234
+
+# Add the link
+service arcus api integrations update \
+  --username arcusadmin \
+  --password password \
+  --api-addr http://10.10.111.222:1234 \
+  --id 1611a579-cd14-437a-adf7-77325b2d8a88 \
+  --links-csv 28cee83b-b92f-475a-852d-4ddacd07ddbf
 ```

@@ -24,4 +24,3 @@ iSCSI. These are ideally dedicated storage nodes, but can also be hyperconverged
 1. [**Pull Docker images to each node**](/openstack-kolla-pull.html)
 1. [**Initialize OpenStack's service containers**](/openstack-kolla-deploy.html)
 1. [** Generate the admin OpenRC file**](/openstack-kolla-admin-openrc.html) - `admin-openrc.sh`
-1. [**Run the smoke-tests**](/openstack-smoke-tests.html)

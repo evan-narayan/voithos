@@ -64,6 +64,13 @@ mkdir -p group_vars
 Note: If you've manually installed `docker-ce` to use the ceph node as a deployment server, you
 need to put `container_package_name: docker-ce` in this file.
 
+In newer releases, if you'll be installing OpenStack too, disable Grafana so it doesn't cause a
+conflict:
+
+```yml
+dashboard_enabled: False
+```
+
 
 ### osds.yml
 

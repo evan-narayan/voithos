@@ -226,6 +226,6 @@ enable_horizon: yes
 Gnocchi depends on ceilometer for polling metrics. Enable both gnocchi and ceilometer.
 
 ```yaml
-enable_ceilometer yes
-enable_gnocchi yes
+enable_ceilometer: yes
+enable_gnocchi: yes
 ```

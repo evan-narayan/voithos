@@ -41,7 +41,7 @@ The inventory file defines which servers will own what roles in your cluster.
 Each server listed in the inventory must have an entry in their
 `/root/.ssh/authorized_keys` file and permit Ceph-Ansible to SSH as root.
 
-For a summary of what each service does, check [Ceph's documentation](https://docs.ceph.com/docs/mimic/start/intro/).
+For a summary of what each service does, check [Ceph's documentation](https://docs.ceph.com/en/latest/).
 
 Name this file `ceph-inventory.yml`.
 

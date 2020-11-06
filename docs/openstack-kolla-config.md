@@ -322,7 +322,7 @@ user_enabled_invert = false
 user_enabled_default = 512
 group_id_attribute = cn
 group_name_attribute = ou
-group_member_attribut = member
+group_member_attribute = member
 group_desc_attribute = description
 
 # In big domains with nested OUs you may also need:

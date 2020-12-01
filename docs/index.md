@@ -47,11 +47,12 @@ pip install .
 ---
 
 
-# Install Guides
+# Guides
 
 - [**Installing Ceph**](/ceph-install.html):
   An open-source cloud storage solution
 - [**Installing OpenStack**](/openstack-install.html):
   Private clouds providing virtualization, SDN, and more
 - [**Installing Arcus**](/arcus-install.html): Breqwatr's OpenStack self-service web portal
-- [**Installing Syslog**](/syslog-install): Syslog server collecting network devices
+- [**Installing rsyslog**](/syslog-install): Containerized rsyslog service for network log collection
+- [**Migrating VMs from VMware**](/vmware-migration.html): Exporting VMs to OpenStack from VMware

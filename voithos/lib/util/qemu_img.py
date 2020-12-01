@@ -17,7 +17,7 @@ def convert(input_format, output_format, input_path, output_path):
     if path_out.is_block_device():
         # directly map the block device to the container
         assert_path_exists(path_out)
-        out_mount = "-v {path_out}"
+        out_mount = f"--device {path_out}"
         internal_output_path = path_out
     else:
         # output is a file (or about to be), so mount the folder it exists in
@@ -34,4 +34,16 @@ def convert(input_format, output_format, input_path, output_path):
         f"{internal_input_path} {internal_output_path}"
     )
     cmd = f"docker run -it --name {name} --rm {in_mount} {out_mount} {image} {run}"
+    shell(cmd)
+
+
+def show(vol_path):
+    """ Execute qemu-img show inside a container, direct mapping the volume """
+    name = "qemu-img"
+    image = "breqwatr/qemu-img:latest"
+    path = Path(vol_path)
+    vol_abspath = path.absolute().__str__()
+    run = f"qemu-img info {vol_abspath}"
+    mount = f"-v {vol_abspath}:{vol_abspath}"
+    cmd = f"docker run --rm -it --name {name} {mount} {image} {run}"
     shell(cmd)

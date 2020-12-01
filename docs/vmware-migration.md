@@ -179,7 +179,7 @@ If uncertain, check
 If the volumes are still attached to a Windows/Linux migration worker, remove them.
 
 ```bash
-openstack server remove volume kyle-dev 17860215-23a2-4156-9087-8c87a01360bc
+openstack server remove volume migration-worker 17860215-23a2-4156-9087-8c87a01360bc
 ```
 
 

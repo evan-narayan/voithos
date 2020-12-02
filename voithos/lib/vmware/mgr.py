@@ -4,8 +4,10 @@ import os
 import ssl
 
 from pyVim import connect
+from pyVmomi import vim
 
 from voithos.lib.system import error
+from voithos.lib.vmware.common import debug
 
 
 def _environ(name, value=None):
@@ -43,7 +45,7 @@ class VMWareMgr:
         self.vms = []
         self.load_vms()
 
-    conn = None # Required for __del__
+    conn = None  # Required for __del__
 
     def __del__(self):
         """ Clean up the conenction when the object is GC'd """
@@ -51,30 +53,51 @@ class VMWareMgr:
 
     def connect(self):
         """ Connect to the configured VMWare service & set self.conn """
-        SSLVerificationError = _get_ssl_error()
         try:
-            self.conn = connect.SmartConnect(
-                host=self.ip_addr, user=self.username, pwd=self.password
-            )
-        except SSLVerificationError:
+            SSLVerificationError = _get_ssl_error()
             try:
-                ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-                ctx.verify_mode = ssl.CERT_NONE
+                debug("Connecting with SmartConnect - regular SSL")
                 self.conn = connect.SmartConnect(
-                    host=self.ip_addr, user=self.username, pwd=self.password, sslContext=ctx
-                )
-            except (ssl.SSLEOFError, OSError):
-                self.conn = connect.SmartConnectNoSSL(
                     host=self.ip_addr, user=self.username, pwd=self.password
                 )
+            except SSLVerificationError:
+                try:
+                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+                    ctx.verify_mode = ssl.CERT_NONE
+                    debug("Connecting with SmartConnec - TLSv1 and verify off")
+                    self.conn = connect.SmartConnect(
+                        host=self.ip_addr, user=self.username, pwd=self.password, sslContext=ctx
+                    )
+                except (ssl.SSLEOFError, OSError):
+                    debug("Connecting with SmartConnectNoSSL")
+                    self.conn = connect.SmartConnectNoSSL(
+                        host=self.ip_addr, user=self.username, pwd=self.password
+                    )
+        except vim.fault.InvalidLogin:
+            error(f"ERROR: Invalid login for VMware server {self.ip_addr}", exit=True)
+        debug("Connection successful")
 
-    def load_vms(self):
-        """ Return a list of each VM from all datacenters connected to self.conn """
-        self.vms = []
-        # There's usually just one datacenter but there can be multiple
-        for datacenter in self.conn.content.rootFolder.childEntity:
-            for datacenter_vm in datacenter.vmFolder.childEntity:
-                self.vms.append(datacenter_vm)
+    def load_vms(self, entity=None):
+        """Return a list of each VM from all datacenters connected to self.conn
+        This function is recursive, since the VMs can be in a tree-like directory structure
+        """
+        if entity is None:
+            debug("Starting recursive VM search")
+            self.load_vms(entity=self.conn.content.rootFolder)
+            return
+        if isinstance(entity, vim.VirtualMachine):
+            debug(f"VM:         {entity}  -  {entity.name}")
+            self.vms.append(entity)
+            return
+        if isinstance(entity, vim.Folder):
+            debug(f"FOLDER:     {entity}  -  {entity.name}")
+        if isinstance(entity, vim.Datacenter):
+            debug(f"DATACENTER: {entity}  -  {entity.name}")
+        if hasattr(entity, "vmFolder"):
+            self.load_vms(entity.vmFolder)
+        if hasattr(entity, "childEntity"):
+            for child in entity.childEntity:
+                self.load_vms(child)
 
     def find_vms_by_name(self, names):
         """Return a list of VMs who's names contain any element found in names.

@@ -74,7 +74,7 @@ Device       Start      End  Sectors  Size Type
 /dev/vdb3  3328000 33552383 30224384 14.4G Linux LVM
 ```
 
-In this example, the the 1G volume is obviously the boot partition. Its never the one of type
+In this example, the 1G volume is obviously the boot partition. Its never the one of type
 `EFI System`.
 
 If you're unsure or scripting, grab the UUID from `blkid` of each partition which might be the boot

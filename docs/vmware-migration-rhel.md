@@ -43,24 +43,83 @@ it and make changes.
 
 ### Mount the boot partition
 
-Figure out which partition is the boot partition for the VM to be migrated. Often it will be a
-small partition at the start of the boot disk. `fdisk` will show an `*` in the boot column for that
-partition. For example:
+Figure out which partition is the boot partition for the VM to be migrated.
+The VM's boot partition could either be an MBR style one, or a GPT partition.
+
+
+#### Locating an MBR boot partition
+
+An MBR partition will look as follows from `fdisk -l`. Note that there is a `boot` column.
 
 ```
-fdisk -l
-# ...
+...
 Device     Boot   Start      End  Sectors Size Id Type
 /dev/vdb1  *       2048  2099199  2097152   1G 83 Linux
 /dev/vdb2       2099200 41943039 39843840  19G 8e Linux LVM
 ```
 
-Once you know which one is boot, mount it:
+#### Locating a GPT boot partition
+
+A GPT partition will look as follows from `fdisk -l`. Note the line saying `Disklabel type: gpt`
+and the `EFI System` partition.
+
+```
+...
+Disklabel type: gpt
+Disk identifier: 6092E1C5-C1C7-42E9-879F-C692A2529C56
+
+Device       Start      End  Sectors  Size Type
+/dev/vdb1     2048  1230847  1228800  600M EFI System
+/dev/vdb2  1230848  3327999  2097152    1G Linux filesystem
+/dev/vdb3  3328000 33552383 30224384 14.4G Linux LVM
+```
+
+In this example, the the 1G volume is obviously the boot partition. Its never the one of type
+`EFI System`.
+
+If you're unsure or scripting, grab the UUID from `blkid` of each partition which might be the boot
+partition. The `grub.cfg` file in the EFI partition will reference it. Here's a script to quickly
+print boot device:
 
 ```bash
-# Example:
+# Manually set the disk path that you know contains the boot partition
+disk=/dev/vdb
+
+# programatically find the efi_partition
+efi_partition=$(fdisk -l $disk | grep "^$disk" | grep "EFI System" | awk '{print $1}')
+if [[ "$efi_partition" == "" ]]; then echo "ERROR: THIS IS NOT AN EFI DISK"; fi
+
+# Mount the EFI partition to the migration worker so we can check its grub file
+efi_mount="/mnt/efi"
+mkdir -p $efi_mount
+umount $efi_mount || true
+mount $efi_partition $efi_mount
+grub_file="$efi_mount/EFI/redhat/grub.cfg"
+if [[ ! -f $grub_file ]]; then echo "ERROR: grub file not found - $grub_file"; fi
+
+# Loop through the other partitions checking if they're the boot partition
+for partition in $(fdisk -l $disk | grep "^$disk" | grep -v $efi_partition | awk '{print $1}'); do
+  uuid=$(blkid $partition | cut -d' ' -f2 | cut -d\" -f2)
+  if [[ $(grep -e "$uuid" $grub_file) ]]; then
+    echo "Boot device: $partition"
+    break
+  fi
+done
+umount $efi_mount
+```
+
+#### Mounting the identified boot partition
+
+Identify the boot partition using the above steps and mount it. Examples:
+
+```bash
 mkdir -p /mnt/boot
+
+# In BIOS disks, its usually vdb1
 mount /dev/vdb1 /mnt/boot
+
+# In UEFI disks, its usually vdb2
+# mount /dev/vdb2 /mnt/boot
 ```
 
 

@@ -1,8 +1,11 @@
 # ps1
-# This is the Voithos Powershell Module
-# Save it to $PSHome\Modules\Voithos\ on a Windows system
-# Import it with "Import-Module Voithos"
-# These functions provide some useful Windows utilities, particularly for migrations
+
+# Voithos Powershell Module
+# Maintained by Breqwatr - info@breqwatr.com
+
+# Save to:     C:\Program Files (x86)\WindowsPowerShell\Modules\Modules\Voithos\voithos.psm1
+# Import CMD:  Import-Module Voithos
+# Description: Provides Windows import automation functions
 
 
 function Repair-OfflineDisks {
@@ -36,10 +39,23 @@ function Get-TargetBootPartition {
 }
 
 
+function Save-CloudBaseInit {
+  # Download the cloudbase init installer
+  $path = "C:\CloudbaseInitSetup.msi"
+  $exists = Test-Path $path
+  if (!$exists){
+    Write-Host "Cloudbase-init archive not found - downloading to $path"
+    $url = "https://cloudbase.it/downloads/CloudbaseInitSetup_Stable_x64.msi"
+    (New-Object System.Net.WebClient).DownloadFile($url, $path)
+  }
+  return $path
+}
+
+
 function Save-VirtioISO {
   # Download the Virtio ISO file if its missing - Return the path to the file
   $path = "C:\virtio.iso"
-  $exists = Test-Path $virtioIsoPath
+  $exists = Test-Path $path
   if (!$exists){
     Write-Host "ISO file not found - downloading to $path"
     $url = "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso"
@@ -57,16 +73,42 @@ function Get-VirtioVolume {
 }
 
 
+function Get-MountedWindowsVersion {
+  param(
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
+  )
+  $letter = $BootPartition.DriveLetter
+  $hklmPath = ($letter + ":\Windows\System32\Config\SOFTWARE")
+  $HKEY_LOCAL_MACHINE_SOFTWARE = "HKLM\TEMPSOFTWARE"
+  REG LOAD $HKEY_LOCAL_MACHINE_SOFTWARE  $hklmPath | Out-Null
+  $currentVersionPath = ($HKEY_LOCAL_MACHINE_SOFTWARE + "\Microsoft\Windows NT\CurrentVersion")
+  $productName = (Get-ItemProperty Registry::$currentVersionPath).productName
+  REG UNLOAD $HKEY_LOCAL_MACHINE_SOFTWARE | Out-Null
+  return $productName
+}
+
+
 function Add-VirtioDrivers {
   param(
-    [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromRemainingArguments = $true)]
-    [PSObject]$BootPartition,
-    [string]$Distro
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition,
+    [Parameter(Mandatory=$False)] [PSObject] $Distro
   )
+  $distroOptions = @("w7", "w8", "w8.1", "2k12", "2k12r2", "2k16", "2k19")
+  Write-Host "Valid -Distro values: $distroOptions"
+  if (! $distroOptions.Contains($Distro)){
+    return "ERROR: Invalid -Distro value"
+  }
+  $windowsVersion = Get-MountedWindowsVersion -BootPartition $BootPartition
+  Write-Host "Provided Distro value: $Distro"
+  Write-Host "Detected Windows Version: $windowsVersion"
+  $confirm = Read-Host -Prompt "Continue? [y/N]"
+  if ($confirm -ne "y" -and $confirm -ne "Y") {
+    return "Quitting"
+  }
   # Install all of the VirtIO drivers for the given OS using DISM on the selected BootPartition
   $virtio_drive = $(Get-VirtioVolume).DriveLetter + ":\"
   $drivers = Get-ChildItem  -Recurse $virtio_drive | Where-Object {
-    $_.PSIsContainer -eq $true -and $_.Name -eq "amd64" -and $_.Parent.Name -eq $distro
+    $_.PSIsContainer -eq $true -and $_.Name -eq "amd64" -and $_.Parent.Name -eq $Distro
   }
   $bootVol = $BootPartition.DriveLetter +":/"
   ForEach ($driver in $drivers){
@@ -79,8 +121,7 @@ function Add-VirtioDrivers {
 
 function Get-PartitionDrivers {
   param(
-    [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromRemainingArguments = $true)]
-    [PSObject]$BootPartition
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
   )
   # Run DISM /Get-Drivers on the given partition
   $bootVol = $BootPartition.DriveLetter +":/"
@@ -91,8 +132,7 @@ function Get-PartitionDrivers {
 
 function Remove-VMwareTools {
   param(
-    [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromRemainingArguments = $true)]
-    [PSObject]$BootPartition
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
   )
   # Manually remove all traces of VMware Tools, file-by-file and registry key-by-registry key
   $letter = $BootPartition.DriveLetter
@@ -191,8 +231,7 @@ function Remove-VMwareTools {
 
 function Get-BootStyle {
   param(
-    [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromRemainingArguments = $true)]
-    [PSObject]$BootPartition
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
   )
   # Check if UEFI or BIOS is needed to boot the mounted VM's BootPartition
   $disk = Get-Disk -Number $BootPartition.DiskNumber
@@ -208,11 +247,118 @@ function Get-BootStyle {
 }
 
 
+function Set-InterfaceAddress {
+  param(
+    [Parameter(Mandatory=$True)]  [string] $MacAddress,
+    [Parameter(Mandatory=$True)]  [string] $IPAddress,
+    [Parameter(Mandatory=$True)]  [string] $SubnetPrefix,
+    [Parameter(Mandatory=$false)] [string] $GatewayIPAddress,
+    [Parameter(Mandatory=$false)] [string] $DNSAddressCSV
+  )
+  # Convert mac address format
+  # Openstack format: fa:16:3e:5e:de:ce --> Windows format: FA-16-3E-5E-DE-CE
+  $MacAddress = ($MacAddress -Replace ":","-").ToUpper()
+  $nic = Get-NetAdapter | Where-Object MacAddress -eq $MacAddress
+  if (! $nic){
+    Write-Host "ERROR: Failed to find NIC with MAC address $MacAddress"
+    return
+  }
+  Remove-NetIPAddress -InterfaceIndex $nic.ifIndex -Confirm:$False
+  $newIPAddress = New-NetIPAddress -InterfaceIndex $nic.ifIndex -IPAddress $IPAddress -PrefixLength $SubnetPrefix
+  if ($GatewayIPAddress){
+    $gwPrefix = "0.0.0.0/0"
+    Get-NetRoute | Where-Object DestinationPrefix -eq $gwPrefix | Remove-NetRoute -Confirm:$False
+    New-NetRoute -InterfaceIndex $nic.ifIndex -DestinationPrefix $gwPrefix -NextHop $GatewayIPAddress | Out-Null
+  }
+  if ($DNSAddressCSV){
+    $dnsAddresses = $DNSAddressCSV.Split(",")
+    Set-DnsClientServerAddress -InterfaceIndex $nic.ifIndex -ServerAddresses $dnsAddresses | Out-Null
+  }
+  return $newIPAddress[0]
+}
 
-# Export the functions
+
+function Copy-VoithosModuleToBootPartition {
+  param(
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
+  )
+  # Write the Voithos module to the migration target's boot partition
+  $src = "$Env:ProgramFiles\WindowsPowerShell\Modules\Voithos"
+  $dest1 = ($BootPartition.DriveLetter + ":\Program Files (x86)\WindowsPowerShell\Modules\")
+  Copy-Item -Recurse -Path $src -Destination $dest1 -Force
+  Get-Item $dest1
+  $dest2 = ($BootPartition.DriveLetter + ":\Program Files\WindowsPowerShell\Modules\")
+  Copy-Item -Recurse -Path $src -Destination $dest2 -Force
+  Get-Item $dest2
+}
+
+
+function New-RunOnceScript {
+  param(
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
+  )
+  $breqwatrDir = ($BootPartition.DriveLetter + ":\Breqwatr")
+  New-Item -ItemType Directory -Force -Path $breqwatrDir
+  $path = ($breqwatrDir + "\RunOnce.ps1")
+  notepad $path
+  return $path
+}
+
+
+function Set-RunOnceScript {
+  param(
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition,
+    [Parameter(Mandatory=$True)] [string] $ScriptPath
+  )
+  $hklmPath = ($BootPartition.DriveLetter + ":\Windows\System32\Config\SOFTWARE")
+  $HKEY_LOCAL_MACHINE_SOFTWARE = "HKLM\TEMPSOFTWARE"
+  Write-Host "REG LOAD $HKEY_LOCAL_MACHINE_SOFTWARE  $hklmPath"
+  REG LOAD $HKEY_LOCAL_MACHINE_SOFTWARE  $hklmPath
+  $runOnceKey = ($HKEY_LOCAL_MACHINE_SOFTWARE + "\Microsoft\Windows\CurrentVersion\RunOnce")
+  $runOnceVal = "PowerShell.exe -executionpolicy bypass -file C:\Breqwatr\RunOnce.ps1"
+  Write-Host "REG ADD $runOnceKey /ve /t REG_SZ /d $runOnceVal /f"
+  REG ADD $runOnceKey /ve /t REG_SZ /d $runOnceVal /f
+  Write-Host "REG UNLOAD $HKEY_LOCAL_MACHINE_SOFTWARE"
+  REG UNLOAD $HKEY_LOCAL_MACHINE_SOFTWARE
+}
+
+
+function Get-RunOnceScript {
+  param(
+    [Parameter(Mandatory=$True)] [PSObject] $BootPartition
+  )
+  $hklmPath = ($BootPartition.DriveLetter + ":\Windows\System32\Config\SOFTWARE")
+  $HKEY_LOCAL_MACHINE_SOFTWARE = "HKLM\TEMPSOFTWARE"
+  Write-Host "REG LOAD $HKEY_LOCAL_MACHINE_SOFTWARE  $hklmPath"
+  REG LOAD $HKEY_LOCAL_MACHINE_SOFTWARE  $hklmPath
+  $runOnceKey = ($HKEY_LOCAL_MACHINE_SOFTWARE + "\Microsoft\Windows\CurrentVersion\RunOnce")
+  Write-Host "REG QUERY $runOnceKey"
+  REG QUERY $runOnceKey
+  Write-Host "REG UNLOAD $HKEY_LOCAL_MACHINE_SOFTWARE"
+  REG UNLOAD $HKEY_LOCAL_MACHINE_SOFTWARE
+}
+
+function Set-AllDisksOnline {
+  $offDisks = Get-Disk | Where-Object OperationalStatus -eq "Offline"
+  $offDisks | Set-Disk -isOffline $False
+  $offDisks | Set-Disk -isReadOnly $False
+}
+
+
+###################################################################################################
+###################################################################################################
+
+# Publc Function Exports
 Export-ModuleMember -Function Get-TargetBootPartition
+Export-ModuleMember -Function Get-MountedWindowsVersion
 Export-ModuleMember -Function Add-VirtioDrivers
 Export-ModuleMember -Function Get-PartitionDrivers
 Export-ModuleMember -Function Remove-VMwareTools
 Export-ModuleMember -Function Get-BootStyle
 Export-ModuleMember -Function Repair-OfflineDisks
+Export-ModuleMember -Function Copy-VoithosModuleToBootPartition
+Export-ModuleMember -Function Set-InterfaceAddress
+Export-ModuleMember -Function New-RunOnceScript
+Export-ModuleMember -Function Get-RunOnceScript
+Export-ModuleMember -Function Set-RunOnceScript
+Export-ModuleMember -Function Set-AllDisksOnline

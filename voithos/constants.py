@@ -2,6 +2,16 @@
 
 import os
 
+# Packages required by deployment server.
+OFFLINE_DEPLOYMENT_SERVER_PACKAGES = [
+    "python3",
+    "python3-pip",
+    "python3-openstackclient",
+    "python3-gnocchiclient",
+    "docker",
+    "virtualenv",
+]
+
 # Major release of this CLI, for use with "voithos version"
 VOITHOS_VERSION = "1.00"
 
@@ -83,7 +93,6 @@ KOLLA_IMAGE_REPOS["train"].extend(
         "ubuntu-source-prometheus-alertmanager",
         "ubuntu-source-prometheus-blackbox-exporter",
         "ubuntu-source-prometheus-cadvisor",
-        "ubuntu-source-prometheus-elasticsearch-exporter",
         "ubuntu-source-prometheus-haproxy-exporter",
         "ubuntu-source-prometheus-memcached-exporter",
         "ubuntu-source-prometheus-mtail",
@@ -91,8 +100,6 @@ KOLLA_IMAGE_REPOS["train"].extend(
         "ubuntu-source-prometheus-node-exporter",
         "ubuntu-source-prometheus-openstack-exporter",
         "ubuntu-source-prometheus-server",
-        "ubuntu-source-prometheus-alertmanager",
-        "ubuntu-source-prometheus-cadvisor",
         "ubuntu-source-kibana",
         "ubuntu-source-gnocchi-api",
         "ubuntu-source-gnocchi-metricd",
@@ -101,6 +108,6 @@ KOLLA_IMAGE_REPOS["train"].extend(
         "ubuntu-source-ceilometer-ipmi",
         "ubuntu-source-ceilometer-notification",
         "ubuntu-source-ceilometer-central",
-        "ubuntu-source-grafana"
+        "ubuntu-source-grafana",
     ]
 )

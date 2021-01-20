@@ -57,7 +57,7 @@ ceph osd pool create volumes <volumes pg count>
 ceph osd pool set volumes size <replica count>
 ceph osd pool application enable volumes rbd
 
-ceph osd pool create images <volumes pg count>
+ceph osd pool create images <images pg count>
 ceph osd pool set images size <replica count>
 ceph osd pool application enable images rbd
 ```

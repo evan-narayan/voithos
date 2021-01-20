@@ -13,6 +13,8 @@ Ceph already be installed. If you haven't installed Ceph yet, follow the
 
 ## Install OpenStack
 
+Start with step 2 for offline install.
+
 1. (optional) Deploy a local Docker registry
    - [**Launch a local Docker registry**](/registry.html) and
    - [**Sync Kolla images to it**](/openstack-registry-mirror.html)

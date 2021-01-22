@@ -3,6 +3,6 @@
 from voithos.lib.system import shell
 
 
-def start(ip_address, port):
+def start(ip_address, port, tag):
     """ Start the local apt container"""
-    shell(f"docker run -d --name apt -p {ip_address}:{port}:80 breqwatr/apt:stable")
+    shell(f"docker run -d --name apt -p {ip_address}:{port}:80 breqwatr/apt:{tag}")

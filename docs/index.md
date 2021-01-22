@@ -17,7 +17,8 @@ This free and open source project is created and managed by Breqwatr.
 ## Installing Voithos
 
 Voithos has been tested on Mac OSX Catalina, Ubuntu 18.04 Bionic, and Windows 10.
-
+If you are doing an offline install, please follow [**this**](offline-deployment-server.html)
+procedure to setup deployment server. Then proceed with "Guides" section below for further deployments,
 To install Voithos, check out the Git project and use pip in a virtualenv.
 
 ### Ubuntu 18.04 Installation

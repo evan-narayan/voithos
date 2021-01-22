@@ -7,10 +7,11 @@ import voithos.lib.service.pip as pip
 
 @click.option("--ip", "ip_address", default="0.0.0.0", help="[optional] bind IP address")
 @click.option("--port", default="3141", help="[optional] bind port (default 3141)")
+@click.option("--tag", default="train", help="[optional] image tag (default train)")
 @click.command()
-def start(ip_address, port):
+def start(ip_address, port, tag):
     """ Launch the local Pip server """
-    pip.start(ip_address, port)
+    pip.start(ip_address, port, tag)
 
 
 def get_pip_group():

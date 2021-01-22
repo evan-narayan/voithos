@@ -4,7 +4,29 @@ Arcus is ran as a few Docker containers. Deploy Voithos to install Arcus.
 
 
 ---
+## Prerequisites For Offline Install
+In offline deployment, transfer voithos package and it's dependencies from deployment server to
+all control nodes.
+```bash
+scp -r /<path-to-offline-media>/voithos_packages/ <hostname>@<ip>:/<home-directory-path>
+```
 
+Now go to each server and install voithos and it's dependencies.
+```bash
+virtualenv --python=python3 env/
+source env/bin/activate
+mv /etc/pip.conf /etc/pip_conf
+cd /<home-directory>/voithos_packages/
+pip install -r requirements.txt --no-index --find-links  dependencies/ voithos-1.0.tar.gz
+mv /etc/pip_conf mv /etc/pip.conf
+```
+
+Pull arcus images from registry
+```bash
+voithos service registry pull-image-from-registry --name arcus-api --tag latest <registry-ip>:<registry-port>
+voithos service registry pull-image-from-registry --name arcus-client --tag latest <registry-ip>:<registry-port>
+voithos service registry pull-image-from-registry --name arcus-mgr --tag latest <registry-ip>:<registry-port>
+```
 
 ## Apply license key
 

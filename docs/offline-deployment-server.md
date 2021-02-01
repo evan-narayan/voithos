@@ -70,7 +70,7 @@ apt-get update
 
 ## Install deployment server packages
 ```bash
- apt-get install -y python3 python3-pip virtualenv python3-openstackclient python3-gnocchiclient docker
+ apt-get install -y python3 python3-pip virtualenv python3-openstackclient python3-gnocchiclient docker-ce
 ```
 
 ## Create and source virtualenv

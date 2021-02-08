@@ -39,9 +39,8 @@ def mount(devices):
     RhelWorker(devices).mount_volumes(print_progress=True)
 
 
-@click.option("--force/--no-force", "force", default=False, help="Skip the prompts")
 @click.command()
-def unmount(force):
+def unmount():
     """ Unmount all the devices partitions from the root volume's fstab """
     RhelWorker().unmount_volumes(print_progress=True)
 
@@ -51,18 +50,6 @@ def unmount(force):
 def add_virtio_drivers(force):
     """ Add VirtIO drivers to mounted volume/device """
     RhelWorker().add_virtio_drivers(force)
-
-
-@click.command(name="vmware-tools")
-def uninstall_vmware_tools():
-    """ Uninstall VMware Tools """
-    RhelWorker().uninstall("vm-tools", like=True)
-
-
-@click.command(name="cloud-init")
-def uninstall_cloud_init():
-    """ Uninstall Cloud-Init """
-    RhelWorker().uninstall("cloud-init", like=True)
 
 
 @click.argument("package")
@@ -84,6 +71,18 @@ def uninstall():
     """ Uninstall packages """
 
 
+@click.command(name="vmware-tools")
+def uninstall_vmware_tools():
+    """ Uninstall VMware Tools """
+    RhelWorker().uninstall("vm-tools", like=True)
+
+
+@click.command(name="cloud-init")
+def uninstall_cloud_init():
+    """ Uninstall Cloud-Init """
+    RhelWorker().uninstall("cloud-init", like=True)
+
+
 @click.option("--dhcp/--static", default=True, help="DHCP or Static IP (default DHCP)")
 @click.option("--mac", "-m", required=True, help="Interface MAC address")
 @click.option("--ip-addr", "-i", help="IP Address (requires --static)")
@@ -101,7 +100,9 @@ def set_interface(dhcp, mac, ip_addr, name, prefix, gateway, dns, domain):
     else:
         if ip_addr is None or prefix is None:
             error("ERROR: --ip-addr and --prefix are required with --static", exit=True)
-    RhelWorker().set_udev_interface(
+    worker = RhelWorker()
+    worker.set_udev_interface_mapping(interface_name=name, mac_addr=mac)
+    worker.set_interface(
         interface_name=name,
         is_dhcp=dhcp,
         mac_addr=mac,

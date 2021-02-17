@@ -130,7 +130,7 @@ Back up the current GPO settings, as they'll get overwritten when we set the one
 Backup-MountedGPOSettings -BootPartition $bootPartition
 ```
 
-The `New-RunOnceScript` command will create a new script file
+The `New-StartupScript` command will create a new script file
 `C:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\startup.ps1`
 on the migration target and open a Notepad window to edit it.
 
@@ -148,6 +148,16 @@ try{
 } catch {
   Write-Host "WARNING: Unblock-file failed"
 }
+
+# Ensure DeviceInstall Service is not disabled
+Set-Service -Name DeviceInstall -StartupType Manual
+
+# Start DeviceInstall Service to make sure new hardware is installed properly in windows
+Start-Service -Name DeviceInstall
+
+# Disable Firewall on all profiles so that RDP port check and ping checks work for testing
+NetSh Advfirewall set allprofiles state off
+
 Import-Module Voithos
 
 # Set the extra disks to online on boot
